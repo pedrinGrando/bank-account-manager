@@ -1,5 +1,6 @@
 package com.pedro.accountsservice.config;
 
+import com.pedro.accountsservice.model.AccountEvent;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -30,7 +31,7 @@ public class JsonProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, Serializable> jsonKafkaTemplate(ProducerFactory jsonProducerFactory) {
+    public KafkaTemplate<String, AccountEvent> jsonKafkaTemplate(ProducerFactory jsonProducerFactory) {
         return new KafkaTemplate<>(jsonProducerFactory);
     }
 }

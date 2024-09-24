@@ -23,7 +23,8 @@ public class Account {
     public Account() {
     }
 
-    public Account(String accountNumber, String accountHolder, BigDecimal balance, boolean active, boolean negative) {}
+    public Account(String accountNumber, String accountHolder, BigDecimal balance, boolean active, boolean negative) {
+    }
 
     public Long getId() {
         return id;
@@ -71,5 +72,16 @@ public class Account {
 
     public void setNegative(boolean negative) {
         this.negative = negative;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", accountHolder='" + accountHolder + '\'' +
+                ", balance=" + balance +
+                ", active=" + active +
+                ", negative=" + negative +
+                '}';
     }
 }
