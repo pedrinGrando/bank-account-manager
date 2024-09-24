@@ -9,6 +9,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private EventType eventType;
 
     public Event(Long id, EventType eventType) {
