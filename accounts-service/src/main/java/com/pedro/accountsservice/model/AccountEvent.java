@@ -9,7 +9,9 @@ public class AccountEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private EventType eventType;
+
     @ManyToOne
     private Account account;
 

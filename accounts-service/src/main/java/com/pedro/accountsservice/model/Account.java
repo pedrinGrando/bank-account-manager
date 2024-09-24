@@ -15,9 +15,13 @@ public class Account {
     private Long id;
 
     private String accountNumber;
+
     private String accountHolder;
+
     private BigDecimal balance;
+
     private boolean active;
+
     private boolean negative;
 
     public Account() {

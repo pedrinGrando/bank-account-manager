@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Log4j2
 @RequiredArgsConstructor
 @Service
@@ -27,5 +29,14 @@ public class AccountsService {
         AccountEvent event = new AccountEvent(EventType.NEW_ACCOUNT, account);
         kafkaTemplate.send("accounts-topic", event);
         log.info("Event created: {}", event);
+    }
+
+    public List<Account> findAll() {
+       List<Account> accounts = accountsRepository
+               .findAll()
+               .stream()
+               .filter(a -> a.isActive())
+               .toList();
+        return accounts;
     }
 }
