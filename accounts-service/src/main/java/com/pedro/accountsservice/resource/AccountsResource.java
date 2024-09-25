@@ -1,5 +1,7 @@
 package com.pedro.accountsservice.resource;
 
+import com.pedro.accountsservice.dto.DepositInputRequest;
+import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.service.AccountsService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -41,6 +44,30 @@ public class AccountsResource {
     public ResponseEntity<List<Account>> getAllAccounts() {
         List<Account> activeAccounts = accountsService.findAll();
         return ResponseEntity.ok().body(activeAccounts);
+    }
+
+    /**
+     * Requst for deposit into any account.
+     * @return a ResponseEntity containing request response.
+     */
+    @PutMapping("/deposit")
+    public ResponseEntity<?> deposit(@RequestBody DepositInputRequest request) {
+
+        if (accountsService.deposit(request)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PutMapping("/withdraw")
+    public ResponseEntity<?> withdraw(@RequestBody WithdrawInputRequest request) {
+
+        if (accountsService.withdraw(request)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }
 
