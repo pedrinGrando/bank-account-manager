@@ -1,7 +1,9 @@
 package com.pedro.accountsservice.resource;
 
+import com.pedro.accountsservice.dto.AccountDTO;
 import com.pedro.accountsservice.dto.DepositInputRequest;
 import com.pedro.accountsservice.dto.WithdrawInputRequest;
+import com.pedro.accountsservice.dto.TransferInputRequest;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.service.AccountsService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,13 +27,13 @@ public class AccountsResource {
     /**
      * Creates a new account.
      *
-     * @param account the account to be created, passed in the request body.
+     * @param accDto the account to be created, passed in the request body.
      * @return a ResponseEntity indicating that the account was created with HTTP status 201 (Created).
      * @throws InterruptedException if the account creation process is interrupted.
      */
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody Account account) throws InterruptedException {
-        accountsService.createAccount(account);
+    public ResponseEntity<?> createAccount(@RequestBody AccountDTO accDto) throws InterruptedException {
+        accountsService.createAccount(accDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -47,7 +48,8 @@ public class AccountsResource {
     }
 
     /**
-     * Requst for deposit into any account.
+     * Request for deposit into any account.
+     * @param request with request body.
      * @return a ResponseEntity containing request response.
      */
     @PutMapping("/deposit")
@@ -60,10 +62,30 @@ public class AccountsResource {
         }
     }
 
+
+    /**
+     * Request for withdraw from any account.
+     * @param request with request body.
+     * @return a ResponseEntity containing request response.
+     */
     @PutMapping("/withdraw")
     public ResponseEntity<?> withdraw(@RequestBody WithdrawInputRequest request) {
 
         if (accountsService.withdraw(request)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * Request for transfer from any account to anyone.
+     * @param request with request body.
+     * @return a ResponseEntity containing request response.
+     */
+    @PutMapping("/transfer")
+    public ResponseEntity<?> transfer(@RequestBody TransferInputRequest request){
+        if (accountsService.transfer(request)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

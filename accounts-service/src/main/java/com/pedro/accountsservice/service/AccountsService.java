@@ -1,6 +1,8 @@
 package com.pedro.accountsservice.service;
 
+import com.pedro.accountsservice.dto.AccountDTO;
 import com.pedro.accountsservice.dto.DepositInputRequest;
+import com.pedro.accountsservice.dto.TransferInputRequest;
 import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.enums.EventType;
 import com.pedro.accountsservice.model.Account;
@@ -13,26 +15,47 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class AccountsService {
 
+    private static final String ACCOUNT_TOPIC = "accounts-topic";
+    private static final String ACCOUNT_PREFIX = "ACC";
+    private static final int ACCOUNT_NUMBER_LENGTH = 4;
+    private static final int MAX_ATTEMPTS = 1000;
+
     private final AccountsRepository accountsRepository;
+
+    private final SecureRandom random = new SecureRandom();
 
     @Autowired
     private KafkaTemplate<String, AccountEvent> kafkaTemplate;
 
-    public void createAccount(Account account) throws InterruptedException {
+    public void createAccount(AccountDTO accDto) throws InterruptedException {
+        String accountNumber = generateUniqueAccountNumber();
+        Account account = new Account(accDto);
+        account.setAccountNumber(accountNumber);
         accountsRepository.save(account);
         log.info("Account created: {}", account);
         Thread.sleep(1000);
         AccountEvent event = new AccountEvent(EventType.NEW_ACCOUNT, account);
-        kafkaTemplate.send("accounts-topic", event);
-        log.info("Account created: {}", event);
+        kafkaTemplate.send(ACCOUNT_TOPIC, event);
+        log.info("Account event sent: {}", event);
+    }
+
+    private String generateUniqueAccountNumber() {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            String randomNumber = String.format("%0" + ACCOUNT_NUMBER_LENGTH + "d", random.nextInt((int) Math.pow(10, ACCOUNT_NUMBER_LENGTH)));
+            String accountNumber = ACCOUNT_PREFIX + randomNumber;
+            if (!accountsRepository.existsByAccountNumber(accountNumber)) {
+                return accountNumber;
+            }
+        }
+        throw new RuntimeException("Failed to generate a unique account number after " + MAX_ATTEMPTS + " attempts.");
     }
 
     public List<Account> findAll() {
@@ -53,7 +76,7 @@ public class AccountsService {
         if (accepted) {
             account.setBalance(account.getBalance().add(request.getValue()));
             accountsRepository.save(account);
-            kafkaTemplate.send("accounts-topic", new AccountEvent(EventType.DEPOSIT, account));
+            kafkaTemplate.send(ACCOUNT_TOPIC, new AccountEvent(EventType.DEPOSIT, account));
         }
 
         log.info("Deposit request: {}", accepted ? "Accepted" : "Rejected");
@@ -73,10 +96,35 @@ public class AccountsService {
             account.setBalance(account.getBalance().subtract(withdrawAmount));
             accountsRepository.save(account);
             AccountEvent event = new AccountEvent(EventType.WITHDRAWAL, account);
-            kafkaTemplate.send("accounts-topic", event);
+            kafkaTemplate.send(ACCOUNT_TOPIC, event);
         }
 
         log.info("Withdraw request: {}", accepted ? "Accepted" : "Rejected");
+        return accepted;
+    }
+
+    public boolean transfer(TransferInputRequest request) {
+        Account accFrom = accountsRepository.findIsActiveById(request.getAccountId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        Account accTo = accountsRepository.findIsActiveById(request.getDestinationAccountId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        BigDecimal withdrawAmount = request.getValue();
+
+        boolean accepted = !accFrom.isNegative() && !accTo.isNegative()
+                && accFrom.getBalance().compareTo(withdrawAmount) >= 0;
+
+        if (accepted) {
+            accFrom.setBalance(accFrom.getBalance().subtract(withdrawAmount));
+            accountsRepository.save(accFrom);
+            accTo.setBalance(accTo.getBalance().add(withdrawAmount));
+            accountsRepository.save(accTo);
+            AccountEvent event = new AccountEvent(EventType.TRANSFER, accTo);
+            kafkaTemplate.send(ACCOUNT_TOPIC, event);
+        }
+
+        log.info("Transfer request: {}", accepted ? "Accepted" : "Rejected");
         return accepted;
     }
 }

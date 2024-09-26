@@ -1,9 +1,7 @@
 package com.pedro.accountsservice.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.pedro.accountsservice.dto.AccountDTO;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
@@ -14,6 +12,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String accountNumber;
 
     private String accountHolder;
@@ -28,6 +27,13 @@ public class Account {
     }
 
     public Account(String accountNumber, String accountHolder, BigDecimal balance, boolean active, boolean negative) {
+    }
+
+    public Account(AccountDTO accDto) {
+        this.accountHolder = accDto.getAccountHolder();
+        this.balance = accDto.getBalance();
+        this.active = accDto.isActive();
+        this.negative = accDto.isNegative();
     }
 
     public Long getId() {
