@@ -1,13 +1,17 @@
 package com.pedro.accountsservice.service;
 
-import com.pedro.accountsservice.dto.AccountDTO;
+import com.pedro.accountsservice.dto.AccountRequestDTO;
 import com.pedro.accountsservice.dto.DepositInputRequest;
 import com.pedro.accountsservice.dto.TransferInputRequest;
 import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.enums.EventType;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.model.AccountEvent;
+import com.pedro.accountsservice.model.Adress;
 import com.pedro.accountsservice.repository.AccountsRepository;
+import com.pedro.accountsservice.model.User;
+import com.pedro.accountsservice.repository.AdressRepository;
+import com.pedro.accountsservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +34,36 @@ public class AccountsService {
 
     private final AccountsRepository accountsRepository;
 
+    private final UserRepository userRepository;
+
+    private final AdressRepository adressRepository;
+
     private final SecureRandom random = new SecureRandom();
 
     @Autowired
     private KafkaTemplate<String, AccountEvent> kafkaTemplate;
 
-    public void createAccount(AccountDTO accDto) throws InterruptedException {
+    public void createAccount(AccountRequestDTO accDto) throws InterruptedException {
         String accountNumber = generateUniqueAccountNumber();
-        Account account = new Account(accDto);
+
+        Account account = new Account();
+        User user = new User(accDto.getUser());
+        Adress adress = new Adress(accDto.getAdress());
+
+        adressRepository.save(adress);
+
+        user.setAdress(adress);
+        userRepository.save(user);
+
+        account.setUser(user);
         account.setAccountNumber(accountNumber);
+        account.setAccountHolder(user.getName());
         accountsRepository.save(account);
+
         log.info("Account created: {}", account);
+
         Thread.sleep(1000);
+
         AccountEvent event = new AccountEvent(EventType.NEW_ACCOUNT, account);
         kafkaTemplate.send(ACCOUNT_TOPIC, event);
         log.info("Account event sent: {}", event);

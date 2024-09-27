@@ -1,6 +1,6 @@
 package com.pedro.accountsservice.resource;
 
-import com.pedro.accountsservice.dto.AccountDTO;
+import com.pedro.accountsservice.dto.AccountRequestDTO;
 import com.pedro.accountsservice.dto.DepositInputRequest;
 import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.dto.TransferInputRequest;
@@ -18,10 +18,6 @@ import java.util.List;
 @RequestMapping("/api/accounts")
 public class AccountsResource {
 
-    /**
-     * Service layer for account operations.
-     * Responsible for the business logic related to accounts.
-     */
     private final AccountsService accountsService;
 
     /**
@@ -32,7 +28,7 @@ public class AccountsResource {
      * @throws InterruptedException if the account creation process is interrupted.
      */
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody AccountDTO accDto) throws InterruptedException {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequestDTO accDto) throws InterruptedException {
         accountsService.createAccount(accDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

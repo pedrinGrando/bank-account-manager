@@ -1,6 +1,6 @@
 package com.pedro.accountsservice.model;
 
-import com.pedro.accountsservice.dto.AccountDTO;
+import com.pedro.accountsservice.dto.AccountRequestDTO;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -17,11 +17,15 @@ public class Account {
 
     private String accountHolder;
 
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
-    private boolean active;
+    private boolean active = true;
 
-    private boolean negative;
+    private boolean negative = false;
+
+    @ManyToOne
+    private User user;
+
 
     public Account() {
     }
@@ -29,11 +33,44 @@ public class Account {
     public Account(String accountNumber, String accountHolder, BigDecimal balance, boolean active, boolean negative) {
     }
 
-    public Account(AccountDTO accDto) {
-        this.accountHolder = accDto.getAccountHolder();
-        this.balance = accDto.getBalance();
-        this.active = accDto.isActive();
-        this.negative = accDto.isNegative();
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public boolean isNegative() {
+        return negative;
+    }
+
+    public void setNegative(boolean negative) {
+        this.negative = negative;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+
+    public void setAccountHolder(String accountHolder) {
+        this.accountHolder = accountHolder;
     }
 
     public Long getId() {
@@ -52,38 +89,6 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
-    public String getAccountHolder() {
-        return accountHolder;
-    }
-
-    public void setAccountHolder(String accountHolder) {
-        this.accountHolder = accountHolder;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isNegative() {
-        return negative;
-    }
-
-    public void setNegative(boolean negative) {
-        this.negative = negative;
-    }
-
     @Override
     public String toString() {
         return "Account{" +
@@ -92,6 +97,7 @@ public class Account {
                 ", balance=" + balance +
                 ", active=" + active +
                 ", negative=" + negative +
+                ", user=" + user +
                 '}';
     }
 }
