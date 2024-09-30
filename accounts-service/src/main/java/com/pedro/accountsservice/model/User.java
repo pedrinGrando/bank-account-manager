@@ -23,7 +23,7 @@ public class User {
     @Column(length = 11, nullable = false)
     private String cpf;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 50, nullable = false)
     private String email;
 
     @Column(nullable = false)

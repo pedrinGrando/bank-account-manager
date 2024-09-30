@@ -1,6 +1,5 @@
 package com.pedro.accountsservice.model;
 
-import com.pedro.accountsservice.dto.AccountRequestDTO;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

@@ -16,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -38,6 +40,8 @@ public class AccountsService {
 
     private final AdressRepository adressRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final SecureRandom random = new SecureRandom();
 
     @Autowired
@@ -48,6 +52,7 @@ public class AccountsService {
 
         Account account = new Account();
         User user = new User(accDto.getUser());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Adress adress = new Adress(accDto.getAdress());
 
         adressRepository.save(adress);
@@ -148,5 +153,14 @@ public class AccountsService {
 
         log.info("Transfer request: {}", accepted ? "Accepted" : "Rejected");
         return accepted;
+    }
+
+    public Optional<Account> findByName(String accountHolder) {
+        Optional<Account> optAcc = accountsRepository.findByAccountHolder(accountHolder);
+        if (optAcc.isPresent()) {
+            return optAcc;
+        } else {
+            throw new IllegalArgumentException("Account not found");
+        }
     }
 }

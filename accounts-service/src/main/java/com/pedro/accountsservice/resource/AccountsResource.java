@@ -27,7 +27,7 @@ public class AccountsResource {
      * @return a ResponseEntity indicating that the account was created with HTTP status 201 (Created).
      * @throws InterruptedException if the account creation process is interrupted.
      */
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createAccount(@RequestBody AccountRequestDTO accDto) throws InterruptedException {
         accountsService.createAccount(accDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -54,10 +54,18 @@ public class AccountsResource {
         if (accountsService.deposit(request)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Deposit not accepted.");
         }
     }
 
+    @GetMapping("/findByName/{accountHolder}")
+    public ResponseEntity<Account> getByAccountHolder(@PathVariable String accountHolder) {
+        if (accountsService.findByName(accountHolder).isPresent()) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(accountsService.findByName(accountHolder).get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
     /**
      * Request for withdraw from any account.
@@ -70,7 +78,7 @@ public class AccountsResource {
         if (accountsService.withdraw(request)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Withdraw not accepted.");
         }
     }
 
@@ -84,7 +92,7 @@ public class AccountsResource {
         if (accountsService.transfer(request)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transfer not accepted.");
         }
     }
 }
