@@ -13,10 +13,7 @@ import java.time.ZoneOffset;
 @Component
 public class JwtUtil {
 
-    // Gera uma chave secreta segura. Para produção, armazene esta chave de forma segura.
     private final String secret  = "e758f7dc66f79900a72797e5fa2d34c2599676f7";
-
-    private final long jwtExpirationInMs = 36000000;
 
     public String generateToken(String username) {
         try {

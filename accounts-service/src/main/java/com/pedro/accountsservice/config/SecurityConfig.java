@@ -29,43 +29,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desabilita CSRF pois não estamos usando sessões
                 .csrf(csrf -> csrf.disable())
 
-                // Define as permissões das rotas
+                //permissões das rotas
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/authenticate").permitAll()
-                        .requestMatchers("/api/accounts/create").permitAll()// Permite acesso à rota de autenticação
-                        .anyRequest().authenticated() // Protege todas as outras rotas
+                        .requestMatchers("/api/accounts/create").permitAll()
+                        .anyRequest().authenticated()
                 )
 
-                // Define a política de criação de sessão como stateless
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Define o provider de autenticação
                 .authenticationProvider(authenticationProvider())
 
-                // Adiciona o filtro JWT antes do filtro de autenticação padrão
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Define o AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // Define o PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Configura o AuthenticationProvider
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

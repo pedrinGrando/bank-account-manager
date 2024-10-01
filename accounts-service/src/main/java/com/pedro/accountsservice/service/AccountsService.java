@@ -95,7 +95,7 @@ public class AccountsService {
     }
 
     public boolean deposit(DepositInputRequest request) {
-        Account account = accountsRepository.findIsActiveById(request.getAccountId())
+        Account account = accountsRepository.findIsActiveByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
         boolean accepted = !account.isNegative();
@@ -111,7 +111,7 @@ public class AccountsService {
     }
 
     public boolean withdraw(WithdrawInputRequest request) {
-        Account account = accountsRepository.findIsActiveById(request.getAccountId())
+        Account account = accountsRepository.findIsActiveByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
         BigDecimal withdrawAmount = request.getValue();
@@ -131,10 +131,10 @@ public class AccountsService {
     }
 
     public boolean transfer(TransferInputRequest request) {
-        Account accFrom = accountsRepository.findIsActiveById(request.getAccountId())
+        Account accFrom = accountsRepository.findIsActiveByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
-        Account accTo = accountsRepository.findIsActiveById(request.getDestinationAccountId())
+        Account accTo = accountsRepository.findIsActiveByAccountNumber(request.getDestinationAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
         BigDecimal withdrawAmount = request.getValue();

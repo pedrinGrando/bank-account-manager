@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 
 public class TransferInputRequest {
 
-    private Long accountId;
+    private String accountNumber;
     private BigDecimal value;
-    private Long destinationAccountId;
+    private String destinationAccountNumber;
 
-    public Long getAccountId() {
-        return accountId;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public BigDecimal getValue() {
@@ -24,11 +24,11 @@ public class TransferInputRequest {
         this.value = value;
     }
 
-    public Long getDestinationAccountId() {
-        return destinationAccountId;
+    public String getDestinationAccountNumber() {
+        return destinationAccountNumber;
     }
 
-    public void setDestinationAccountId(Long destinationAccountId) {
-        this.destinationAccountId = destinationAccountId;
+    public void setDestinationAccountNumber(String destinationAccountNumber) {
+        this.destinationAccountNumber = destinationAccountNumber;
     }
 }

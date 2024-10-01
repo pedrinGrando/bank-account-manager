@@ -4,15 +4,15 @@ import java.math.BigDecimal;
 
 public class WithdrawInputRequest {
 
-    private Long accountId;
+    private String accountNumber;
     private BigDecimal value;
 
-    public Long getAccountId() {
-        return accountId;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public BigDecimal getValue() {

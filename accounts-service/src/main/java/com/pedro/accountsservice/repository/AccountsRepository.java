@@ -12,4 +12,6 @@ public interface AccountsRepository extends JpaRepository<Account, Long> {
     Optional<Account> findIsActiveById(Long accountId);
 
     Optional<Account> findByAccountHolder(String accountHolder);
+
+    Optional<Account> findIsActiveByAccountNumber(String accountNumber);
 }

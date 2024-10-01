@@ -2,8 +2,8 @@ package com.pedro.accountsservice.resource;
 
 import com.pedro.accountsservice.dto.AccountRequestDTO;
 import com.pedro.accountsservice.dto.DepositInputRequest;
-import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.dto.TransferInputRequest;
+import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.service.AccountsService;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,9 @@ public class AccountsResource {
     public ResponseEntity<?> deposit(@RequestBody DepositInputRequest request) {
 
         if (accountsService.deposit(request)) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Deposited R$ " + request.getValue()
+                    + " successfully for: "
+                    + request.getAccountNumber());
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Deposit not accepted.");
         }
@@ -76,7 +78,9 @@ public class AccountsResource {
     public ResponseEntity<?> withdraw(@RequestBody WithdrawInputRequest request) {
 
         if (accountsService.withdraw(request)) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Withdraw R$ " + request.getValue()
+                    + " successfully from: "
+                    + request.getAccountNumber());
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Withdraw not accepted.");
         }
@@ -90,7 +94,9 @@ public class AccountsResource {
     @PutMapping("/transfer")
     public ResponseEntity<?> transfer(@RequestBody TransferInputRequest request){
         if (accountsService.transfer(request)) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Transfer R$ " + request.getValue()
+                    + " successfully for: "
+                    + request.getAccountNumber());
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transfer not accepted.");
         }

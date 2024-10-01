@@ -20,7 +20,6 @@ public class InMemoryUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Exemplo: Usuário fixo. Substitua pela lógica real (banco de dados, etc.)
         if ("user".equals(username)) {
             return User.builder()
                     .username("user")
