@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -162,5 +163,20 @@ public class AccountsService {
         } else {
             throw new IllegalArgumentException("Account not found");
         }
+    }
+
+    public void cleanInactiveAccounts() {
+        ArrayList<Account> inactiveAccounts = accountsRepository.findAllInactiveAccounts();
+        try {
+            log.info("Start cleaning inactive accounts...");
+            accountsRepository.deleteAll(inactiveAccounts);
+            Thread.sleep(1000);
+
+        } catch (InterruptedException e) {
+            log.error("Cleaning inactive accounts interrupted", e);
+        }finally {
+            log.info("Cleaning inactive accounts finished.");
+        }
+
     }
 }

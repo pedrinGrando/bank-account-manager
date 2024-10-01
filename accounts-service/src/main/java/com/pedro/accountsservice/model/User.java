@@ -1,6 +1,5 @@
 package com.pedro.accountsservice.model;
 
-import com.pedro.accountsservice.dto.AdressDTO;
 import com.pedro.accountsservice.dto.UserDTO;
 import jakarta.persistence.*;
 

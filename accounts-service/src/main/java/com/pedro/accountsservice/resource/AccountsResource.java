@@ -6,11 +6,13 @@ import com.pedro.accountsservice.dto.TransferInputRequest;
 import com.pedro.accountsservice.dto.WithdrawInputRequest;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.service.AccountsService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.Transient;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -100,6 +102,13 @@ public class AccountsResource {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transfer not accepted.");
         }
+    }
+
+    @Transactional
+    @DeleteMapping("/clean-nactive-accounts")
+    public ResponseEntity<?> cleanNactiveAccounts() {
+        accountsService.cleanInactiveAccounts();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Inactive accounts cleaned.");
     }
 }
 
