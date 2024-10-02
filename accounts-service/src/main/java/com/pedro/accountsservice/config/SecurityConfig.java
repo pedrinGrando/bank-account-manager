@@ -33,7 +33,7 @@ public class SecurityConfig {
 
                 //permissões das rotas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/accounts/create").permitAll()
                         .anyRequest().authenticated()
                 )
