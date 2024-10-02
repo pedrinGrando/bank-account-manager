@@ -2,7 +2,9 @@ package com.pedro.accountsservice.model;
 
 import com.pedro.accountsservice.dto.AdressDTO;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
+@Audited
 @Entity
 @Table
 public class Adress {

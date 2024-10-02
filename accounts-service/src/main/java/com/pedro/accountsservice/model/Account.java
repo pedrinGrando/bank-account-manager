@@ -1,9 +1,11 @@
 package com.pedro.accountsservice.model;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
 
+@Audited
 @Entity
 public class Account {
 

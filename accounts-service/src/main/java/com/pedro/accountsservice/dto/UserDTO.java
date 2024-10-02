@@ -1,5 +1,7 @@
 package com.pedro.accountsservice.dto;
 
+import com.pedro.accountsservice.model.User;
+
 import java.time.LocalDate;
 
 public class UserDTO {
@@ -15,6 +17,27 @@ public class UserDTO {
     private String password;
 
     private LocalDate birthday;
+
+    public UserDTO(String name, String username, String cpf, String email, String password, LocalDate birthday) {
+        this.name = name;
+        this.username = username;
+        this.cpf = cpf;
+        this.email = email;
+        this.password = password;
+        this.birthday = birthday;
+    }
+
+    public UserDTO() {
+    }
+
+    public UserDTO(User user) {
+        this.name = user.getName();
+        this.username = user.getUsername();
+        this.cpf = user.getCpf();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.birthday = user.getBirthday();
+    }
 
     public String getName() {
         return name;

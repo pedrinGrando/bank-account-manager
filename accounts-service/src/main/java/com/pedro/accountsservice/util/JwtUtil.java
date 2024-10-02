@@ -4,16 +4,38 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.pedro.accountsservice.dto.UserDTO;
+import com.pedro.accountsservice.model.User;
+import com.pedro.accountsservice.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
 
     private final String secret  = "e758f7dc66f79900a72797e5fa2d34c2599676f7";
+    private final UserRepository userRepository;
+
+    public JwtUtil(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public Map<String, Object> authenticate(String username){
+        Map<String, Object> response = new HashMap<>();
+        String token = generateToken(username);
+        User authenticatedUser = userRepository.findByUsername(username).get();
+        UserDTO userDto = new UserDTO(authenticatedUser);
+        response.put("usuario", userDto);
+        response.put("expire", this.getExpirationDate());
+        response.put("username", this.extractUsernameFromToken(token));
+        response.put("token", token);
+        return response;
+    }
 
     public String generateToken(String username) {
         try {

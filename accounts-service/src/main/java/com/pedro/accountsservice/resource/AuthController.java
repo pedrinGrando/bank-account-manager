@@ -3,12 +3,16 @@ package com.pedro.accountsservice.resource;
 import com.pedro.accountsservice.dto.AuthRequest;
 import com.pedro.accountsservice.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -20,7 +24,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/authenticate")
-    public String authenticate(@RequestBody AuthRequest authRequest) throws Exception {
+    public ResponseEntity<?> authenticate(@RequestBody AuthRequest authRequest) throws Exception {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -31,7 +35,8 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new Exception("Invalid Credencials.", e);
         }
-
-        return jwtUtil.generateToken(authRequest.getUsername());
+        Map<String, Object> response;
+        response = jwtUtil.authenticate(authRequest.getUsername());
+        return ResponseEntity.ok(response);
     }
 }

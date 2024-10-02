@@ -2,10 +2,12 @@ package com.pedro.accountsservice.model;
 
 import com.pedro.accountsservice.dto.UserDTO;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Audited
 @Entity
 public class User {
 
