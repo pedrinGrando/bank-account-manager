@@ -1,9 +1,6 @@
 package com.pedro.accountsservice.resource;
 
-import com.pedro.accountsservice.dto.AccountRequestDTO;
-import com.pedro.accountsservice.dto.DepositInputRequest;
-import com.pedro.accountsservice.dto.TransferInputRequest;
-import com.pedro.accountsservice.dto.WithdrawInputRequest;
+import com.pedro.accountsservice.dto.*;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.service.AccountsService;
 import jakarta.transaction.Transactional;
@@ -12,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.beans.Transient;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -110,6 +106,19 @@ public class AccountsResource {
         accountsService.cleanInactiveAccounts();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Inactive accounts cleaned.");
     }
+
+    @PostMapping("/request-loan")
+    public ResponseEntity<?> requestLoan(@RequestBody LoanRequestDTO loan) {
+        if (accountsService.requestLoan(loan)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Loan request approved R$ " + loan.getValue()
+                    + " successfully for: "
+                    + loan.getAccountNumber());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Loan request not accepted.");
+        }
+
+    }
+
 }
 
 

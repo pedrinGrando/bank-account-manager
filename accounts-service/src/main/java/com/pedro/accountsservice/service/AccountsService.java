@@ -1,10 +1,8 @@
 package com.pedro.accountsservice.service;
 
-import com.pedro.accountsservice.dto.AccountRequestDTO;
-import com.pedro.accountsservice.dto.DepositInputRequest;
-import com.pedro.accountsservice.dto.TransferInputRequest;
-import com.pedro.accountsservice.dto.WithdrawInputRequest;
+import com.pedro.accountsservice.dto.*;
 import com.pedro.accountsservice.enums.EventType;
+import com.pedro.accountsservice.exceptions.NotEligible;
 import com.pedro.accountsservice.model.Account;
 import com.pedro.accountsservice.model.AccountEvent;
 import com.pedro.accountsservice.model.Adress;
@@ -178,5 +176,30 @@ public class AccountsService {
             log.info("Cleaning inactive accounts finished.");
         }
 
+    }
+
+    public boolean requestLoan(LoanRequestDTO loan) {
+        log.info("Processing request {}", loan.getAccountNumber());
+        Account acc = accountsRepository.findIsActiveByAccountNumber(loan.getAccountNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        this.verifyAccount(loan);
+        acc.setBalance(acc.getBalance().add(loan.getValue()));
+        acc.setNegative(true);
+        accountsRepository.save(acc);
+        return true;
+    }
+
+
+    private void verifyAccount(LoanRequestDTO loan) {
+        log.info("Verifying account {}", loan.getAccountNumber());
+        Account acc = accountsRepository.findIsActiveByAccountNumber(loan.getAccountNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        if (acc.isNegative()) {
+            throw new NotEligible("Account is negative");
+        }
+        BigDecimal difference = acc.getBalance().subtract(loan.getValue());
+        if (difference.compareTo(BigDecimal.valueOf(100)) < 0) {
+            throw new NotEligible("Value not approved");
+        }
     }
 }
